@@ -3,9 +3,9 @@
 Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no aporte.
 
 ## Estado actual (2026-10-22)
-- Repo: `github.com/juangariboglio/Clinica-Medica`, rama `main` con 3 commits publicados.
-  En local quedan cambios sin publicar: Spring Boot 4.1.2, roles/auditoría, ticket WS y
-  endurecimiento. README raíz con captura real en `api/docs/capturas/interfaz.png`.
+- Repo: `github.com/juangariboglio/Clinica-Medica`, rama `main` con 4 commits publicados.
+  Último: `b6426e8` (roles, auditoría, ticket WS y endurecimiento). README raíz con captura
+  real en `api/docs/capturas/interfaz.png`.
 - Backend: Spring Boot 4.1.2 + Security 7 + Hibernate 7 + Java 17 + MySQL (Flyway V1–V9,
   ddl-auto=validate). Arranca con `mvnw.cmd spring-boot:run`.
 - Configuración: `application.properties` exige `VOLLMED_DB_PASSWORD` (sin valor por
