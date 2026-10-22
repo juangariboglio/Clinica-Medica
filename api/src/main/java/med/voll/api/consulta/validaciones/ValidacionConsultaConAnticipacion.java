@@ -7,8 +7,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-@Component
+@Component//ANOTACION IMPORTANTE PARA LAS VALIDACIONES
 public class ValidacionConsultaConAnticipacion implements ValidadorDeConsultas{
+    //LAS CONSULTAS NO PUEDEN REALIZARSE CON 30 MINUTOS DE ANTICIPACION
     public void validar(DTOConsultaReserva datos){
         var fechaConsulta=datos.fecha();
         var ahora= LocalDateTime.now();

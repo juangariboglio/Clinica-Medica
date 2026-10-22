@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import med.voll.api.dto.DTODireccion;
 
-
+//TENER EN CUENTA @Embedded EN LA CLASE Medico PARA USAR ESTE ARROBA DE ABAJO
 @Getter
 @Setter
 @NoArgsConstructor

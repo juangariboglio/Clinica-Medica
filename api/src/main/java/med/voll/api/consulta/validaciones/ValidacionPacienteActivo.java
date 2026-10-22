@@ -7,7 +7,7 @@ import med.voll.api.paciente.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component//ANOTACION IMPORTANTE PARA LAS VALIDACIONES
 public class ValidacionPacienteActivo implements ValidadorDeConsultas{
     @Autowired
     private PacienteRepository pacienteRepository;

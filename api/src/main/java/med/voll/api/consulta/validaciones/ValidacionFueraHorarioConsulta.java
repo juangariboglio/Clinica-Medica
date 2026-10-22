@@ -6,9 +6,10 @@ import med.voll.api.infra.errores.ValidacionException;
 import org.springframework.stereotype.Component;
 
 import java.time.DayOfWeek;
-@Component
+@Component//ANOTACION IMPORTANTE PARA LAS VALIDACIONES
 public class ValidacionFueraHorarioConsulta implements ValidadorDeConsultas{
     public void validar(DTOConsultaReserva datos){
+        //EL HORARIO DE ATENCION DE LA CLINICA ES DE LUNES A SABADO DE 7:00 A 19:00
         var fechaConsulta=datos.fecha();
         var domingo=fechaConsulta.getDayOfWeek().equals(DayOfWeek.SUNDAY);
         var horarioAntesDeAperturaClinica=fechaConsulta.getHour()<7;

@@ -7,6 +7,8 @@ public record DTOActualizarPaciente(
         @NotNull
         Long id,
         String nombre,
+        // EL EMAIL SE PUEDE CAMBIAR; EL DNI NO FORMA PARTE DEL DTO (NO ES EDITABLE)
+        String email,
         String telefono,
         DTODireccion direccion) {
 }

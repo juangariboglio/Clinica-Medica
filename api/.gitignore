@@ -1,0 +1,56 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+.idea/
+
+### Variables de entorno y secretos locales ###
+.env
+.env.*
+!.env.example
+
+### Herramientas de agentes (config local, puede contener credenciales) ###
+.opencode/
+.agents/
+skills-lock.json
+
+### Salidas locales y temporales ###
+*.log
+*.tmp
+frontend/out.txt
+frontend/err.txt
+coverage/
+frontend/coverage/
+
+### Sistema operativo ###
+.DS_Store
+Thumbs.db

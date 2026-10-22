@@ -11,12 +11,15 @@ import java.util.List;
 
 @Table(name="usuario")
 @Entity
+//LAS ANOTACIONES(ARROBAS) DE ABAJO SON DE Lombok
+//ESTAS ANOTACIONES SIRVEN PARA NO ESCRIBIR MAS CODIGO
+//POR EJEMPLO NO SE ESCRIBEN LOS GETTERS NI LOS SETTERS, SE CREA UN CONSTRUCTOR SIN ARGUMENTOS Y OTRO CON TODOS LOS ARGUMENTOS
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of="id")
-
+//CUANDO IMPLEMENTEMOS UserDetails, IMPLEMENTAR SUS METODOS, CON ESTO HACEMOS QUE LA CLASE Usuarios SEA UN OBJETO DE TIPO UserDetails
 public class Usuarios implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +29,7 @@ public class Usuarios implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        //LO QUE HACEMOS CON LA LINEA DE ABAJO ES QUE DESIGNAMOS A ESTA CLASE EL ROL DE USUARIO
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
@@ -33,10 +37,12 @@ public class Usuarios implements UserDetails {
     public String getPassword() {
         return clave;
     }
+    //EN RETURN VA EL ATRIBUTO DE LA CONTRASEÑA, EN ESTE CASO ES clave
     @Override
     public String getUsername() {
         return login;
     }
+    //EN RETURN VA EL ATRIBUTO DEl NOMBRE DE USUARIO, EN ESTE CASO ES login
     @Override
     public boolean isAccountNonExpired() {
         return UserDetails.super.isAccountNonExpired();

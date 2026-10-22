@@ -9,19 +9,22 @@ import med.voll.api.Especialidad;
 import med.voll.api.dto.DTODireccion;
 
 public record DTORegistroMedico(
-        @NotBlank
+        //LAS ARROBAS (anotaciones) SON VALIDACIONES DE LA DEPENDENCIA Validation
+        @NotBlank//VALIDA QUE NO LLEGUE EN BLANCO EL NOMBRE
         String nombre,
-        @NotBlank
-        @Email
+        @NotBlank//VALIDA QUE NO LLEGUE EN BLANCO EL NOMBRE
+        @Email//VALIDA QUE EL EMAIL LLEGUE EN EL FORMATO DE UN EMAIL
         String email,
         @NotBlank
         String telefono,
-        @NotBlank
-        @Pattern(regexp = "\\d{4,6}")//VALIDA EL PATRON DEL DNI, EN ESTE CASO LO QUE ESTA EN COMILLAS DICE QUE SEAN DE 4 A 6 DIGITOS
+        @NotBlank//VALIDA QUE NO LLEGUE EN BLANCO EL NOMBRE
+        @Pattern(regexp = "\\d{2}\\.\\d{3}\\.\\d{3}")
+        //VALIDA EL PATRON DEL DNI, EN ESTE CASO LO QUE ESTA EN COMILLAS DICE QUE EL DNI DEBE TENER 2 DIGITOS, SEGUIDO DE UN PUNTO, 3 DIGITOS, UN PUNTO Y OTROS 3 DIGITOS
+        //POR EJEMPLO: 19.436.777
         String dni,
         @NotNull
         Especialidad especialidad,
-        @NotNull
-        @Valid
+        @NotNull//AQUI VA @NotNull PORQUE ES UN OBJETO DTODireccion
+        @Valid//ESTO TAMBIEN ES PARA EL OBJETO
         DTODireccion direccion) {
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@Component
+@Component//ANOTACION IMPORTANTE PARA LAS VALIDACIONES
 public class ValidacionCancelacionConsulta implements ValidadorDeConsultas{
     @Autowired
     private ConsultaRepository consultaRepository;

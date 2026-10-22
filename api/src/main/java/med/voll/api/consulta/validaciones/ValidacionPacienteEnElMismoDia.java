@@ -7,7 +7,7 @@ import med.voll.api.infra.errores.ValidacionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component//ANOTACION IMPORTANTE PARA LAS VALIDACIONES
 public class ValidacionPacienteEnElMismoDia implements ValidadorDeConsultas{
     @Autowired
     private ConsultaRepository consultaRepository;
@@ -15,7 +15,7 @@ public class ValidacionPacienteEnElMismoDia implements ValidadorDeConsultas{
         var primerHorario=datos.fecha().withHour(7);
         var ultimoHorario=datos.fecha().withHour(18);
         var pacienteTieneOtraConsultaElMismoDia=consultaRepository.existsByPacienteIdAndFechaBetween(datos.idPaciente(),primerHorario,ultimoHorario);
-        if(!pacienteTieneOtraConsultaElMismoDia){
+        if(pacienteTieneOtraConsultaElMismoDia){
             throw new ValidacionException("No se puede crear la consulta porque el paciente tiene una consulta el mismo dia");
         }
     }

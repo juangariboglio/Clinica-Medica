@@ -7,7 +7,7 @@ import med.voll.api.infra.errores.ValidacionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component//ANOTACION IMPORTANTE PARA LAS VALIDACIONES
 public class ValidacionMedicoConOtraConsultaEnElMismoHorario implements ValidadorDeConsultas{
     @Autowired
     private ConsultaRepository consultaRepository;
