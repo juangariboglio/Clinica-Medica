@@ -37,7 +37,8 @@ public class ConfigurationSecurity {
                         .requestMatchers("/v3/api-docs/**","/swagger-ui.html","/swagger-ui/**").permitAll()
                         //LA LINEA DE ARRIBA ES PARA LIBERAR LAS URLS QUE SE GENERAN DE SpringDoc (ver .txt sobre la dependencia)
                         //HANDSHAKE DEL WEBSOCKET: LOS NAVEGADORES NO ENVIAN EL ENCABEZADO Authorization EN EL
-                        //HANDSHAKE, ASI QUE LA RUTA /ws SE LIBERA Y EL TOKEN VIAJA EN ?token=... VALIDADO POR InterceptorHandshake
+                        //HANDSHAKE, ASI QUE /ws SE LIBERA Y VALIDA UN TICKET EFIMERO DE UN SOLO USO.
+                        //EL ENDPOINT /ws/ticket SI EXIGE JWT (anyRequest().authenticated()).
                         .requestMatchers("/ws").permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)//ESTO INDICA QUE PARA CADA OTRO REQUEST NECESITA ESTAR AUTENTICADO

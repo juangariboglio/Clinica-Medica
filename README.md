@@ -22,7 +22,7 @@ Aplicación web para la gestión de una clínica médica. Combina una **API REST
 
 ### Backend
 
-- **Java 17** y **Spring Boot 4.1.1**
+- **Java 17** y **Spring Boot 4.1.2**
 - **Spring Web MVC**, **Spring Data JPA** e **Hibernate 7**
 - **Spring Security 7** con autenticación **JWT** (`java-jwt 4.6.1`)
 - **MySQL 8** y **Flyway** para migraciones
@@ -46,15 +46,16 @@ Aplicación web para la gestión de una clínica médica. Combina una **API REST
 - Validaciones de negocio: horarios, anticipación, disponibilidad e inactividad.
 - Asignación automática de un médico disponible cuando no se indica uno.
 - Manejo estructurado de errores y respuestas de validación.
-- Autenticación y autorización mediante JWT.
-- Documentación de la API con Swagger UI.
+- Autenticación y autorización mediante JWT con roles `ROLE_ADMIN` y `ROLE_RECEPCION`.
+- Auditoría de altas, cambios, bajas, reservas y cancelaciones.
+- Documentación de la API con Swagger UI (desactivada en producción).
 
 ### Interfaz web
 
 - Inicio de sesión y rutas protegidas; cierre automático de sesión por inactividad.
 - **Pacientes**: búsqueda, alta, edición y eliminación lógica.
 - **Médicos**: búsqueda por nombre, filtro por especialidad, alta y edición.
-- **Agenda**: filtro por médico y fecha, actualización en tiempo real por WebSocket.
+- **Agenda**: filtro por médico y fecha, actualización en tiempo real por WebSocket con ticket efímero de un solo uso.
 - **Nueva consulta**: selección de paciente, médico y horario según disponibilidad.
 - Mensajes de error accesibles, foco visible y navegación adaptada a móvil.
 
@@ -83,14 +84,15 @@ Clinica-Medica/
 
 ## Configuración
 
-El backend toma la conexión de base de datos y el secreto JWT de variables de entorno. Los valores por defecto permiten trabajar en local, salvo la contraseña de MySQL, que es obligatoria.
+El backend toma la conexión de base de datos y el secreto JWT de variables de entorno. Los valores por defecto permiten trabajar en local, salvo la contraseña de MySQL y, en producción, el secreto JWT, que son obligatorios.
 
 | Variable | Descripción | Valor por defecto |
 | --- | --- | --- |
 | `VOLLMED_DB_URL` | URL JDBC de la base principal | `jdbc:mysql://localhost:3306/vollmed_api` |
 | `VOLLMED_DB_USERNAME` | Usuario de MySQL | `root` |
 | `VOLLMED_DB_PASSWORD` | Contraseña de MySQL | **sin valor: hay que definirla** |
-| `VOLLMED_JWT_SECRET` | Secreto para firmar los JWT | Secreto solo para desarrollo |
+| `VOLLMED_JWT_SECRET` | Secreto para firmar los JWT | En local hay un valor de desarrollo; **en producción es obligatorio y no tiene default** |
+| `WEBSOCKET_ALLOWED_ORIGINS` | Origen del frontend autorizado para WebSocket | **obligatorio en producción** |
 
 Bases de datos necesarias:
 
@@ -99,7 +101,30 @@ Bases de datos necesarias:
 
 Flyway crea y actualiza el esquema automáticamente al arrancar.
 
-En producción existe el perfil `production`, que utiliza `DATASOURCE_URL`, `DATASOURCE_USERNAME` y `DATASOURCE_PASSWORD`.
+En producción existe el perfil `production`, que utiliza `DATASOURCE_URL`, `DATASOURCE_USERNAME`, `DATASOURCE_PASSWORD`, `VOLLMED_JWT_SECRET` y `WEBSOCKET_ALLOWED_ORIGINS`; además exige TLS para MySQL, desactiva Swagger/OpenAPI y no acepta el secreto JWT de desarrollo.
+
+El login limita los intentos fallidos por IP: 10 intentos cada 15 minutos y bloqueo de 15 minutos. Se puede ajustar con `seguridad.login.max-intentos`, `seguridad.login.minutos-ventana` y `seguridad.login.minutos-bloqueo`.
+
+### Roles y auditoría
+
+- `ROLE_RECEPCION`: operación diaria (listados, altas, ediciones, reservas y cancelaciones).
+- `ROLE_ADMIN`: además puede eliminar médicos y pacientes.
+- El usuario demo `recepcion.e2e` queda como administrador solo para la demo.
+- Para promover otro usuario:
+  ```sql
+  UPDATE usuario SET rol = 'ROLE_ADMIN' WHERE login = 'usuario.deseado';
+  ```
+- Cada operación sensible se registra en la tabla `auditoria` (usuario, acción, entidad, id, detalle y fecha).
+
+### Base de datos de producción
+
+El script `api/docs/sql/usuario-produccion.sql` crea un usuario de aplicación con permisos mínimos. No uses `root` en producción. La conexión del perfil `production` exige `sslMode=REQUIRED`.
+
+### Seguridad del repositorio
+
+- `.github/dependabot.yml` revisa Maven y npm cada semana, y GitHub Actions cada mes.
+- `.github/workflows/codeql.yml` analiza Java y JavaScript en cada push/PR a `main`.
+- Se recomienda proteger `main` sin force-push ni borrado, y activar secret scanning y push protection en la configuración del repositorio.
 
 ## Ejecución
 

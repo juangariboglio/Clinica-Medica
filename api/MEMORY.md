@@ -3,18 +3,22 @@
 Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no aporte.
 
 ## Estado actual (2026-10-22)
-- Repo: `github.com/juangariboglio/Clinica-Medica`, rama `main`. Subidos 3 commits:
-  backend Spring Boot 4.1.1, frontend React y docs/tests. README raíz con captura real en
-  `api/docs/capturas/interfaz.png`.
-- Backend: Spring Boot 4.1.1 + Security 7 + Hibernate 7 + Java 17 + MySQL (Flyway V1–V8,
+- Repo: `github.com/juangariboglio/Clinica-Medica`, rama `main` con 3 commits publicados.
+  En local quedan cambios sin publicar: Spring Boot 4.1.2, roles/auditoría, ticket WS y
+  endurecimiento. README raíz con captura real en `api/docs/capturas/interfaz.png`.
+- Backend: Spring Boot 4.1.2 + Security 7 + Hibernate 7 + Java 17 + MySQL (Flyway V1–V9,
   ddl-auto=validate). Arranca con `mvnw.cmd spring-boot:run`.
 - Configuración: `application.properties` exige `VOLLMED_DB_PASSWORD` (sin valor por
-  defecto); JWT con `VOLLMED_JWT_SECRET`. Bases: `vollmed_api` y `vollmed_api_test`.
+  defecto); JWT con `VOLLMED_JWT_SECRET` (en producción obligatorio, sin default). Bases:
+  `vollmed_api` y `vollmed_api_test`. Producción exige `WEBSOCKET_ALLOWED_ORIGINS` y TLS MySQL.
+- Seguridad: roles `ROLE_ADMIN`/`ROLE_RECEPCION`, auditoría en tabla `auditoria`, login
+  limitado por IP (10 fallos/15 min), ticket WebSocket efímero, CSP y Swagger OFF en producción.
 - Frontend: React 19 + Vite 8 en `frontend/` (`npm run dev`, puerto 5173, proxy /api y /ws).
-- Tests: **140/140 frontend y 4/4 backend**. Comando frontend:
-  `node --test "test/*.test.mjs" "frontend/test/componentes/*.test.mjs"` (globs entre comillas).
-- Spec 001-front-end: T1–T34 completas; limitaciones anotadas (JWT sin roles, selección de
-  hora por rango libre). 3 dudas de spec siguen abiertas.
+- Tests: **140/140 frontend** y **4/4 backend** (MySQL temporal en 3307; Flyway V9 aplicada).
+  Smoke de integración OK: roles 403/204, auditoría, ticket WS de un solo uso y rate limit 429.
+  Comando frontend: `node --test "test/*.test.mjs" "frontend/test/componentes/*.test.mjs"`.
+- Spec 001-front-end: T1–T34 completas; limitación anotada de selección de hora por rango
+  libre. 3 dudas de spec siguen abiertas.
 
 ## Correcciones importantes
 - Security 7: SecurityFilter usa createEmptyContext+setContext+saveContext con
@@ -41,10 +45,22 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
   limitados a 760 px. Cubierto por `frontend/test/componentes/Maquetacion.test.mjs`.
 - Push GitHub: PAT fine-grained necesita **Contents: Read and write** (Metadata read-only es
   normal). `.opencode/` y `.agents/` están ignorados; el token nunca se versiona.
+- JWT: `TokenService` valida el secreto al arrancar (mínimo 32 bytes) y `production` rechaza
+  el valor de desarrollo. La expiración usa `Instant` para no depender de la zona horaria.
+- Roles: demo `recepcion.e2e` queda `ROLE_ADMIN`; el resto de usuarios existentes, recepción.
+  Solo admin borra médicos/pacientes; el frontend oculta “Eliminar” a recepción.
+- WebSocket: ticket de 60 s y un solo uso (`/ws/ticket`); el JWT ya no va en la URL.
+- Auditoría transversal en `infra/auditoria`; no guarda claves ni tokens.
+- Repo: `.github/dependabot.yml` y `.github/workflows/codeql.yml` preparados. La protección
+  de `main` no se pudo activar: el PAT no tiene permiso de administración (HTTP 403).
+- Boot 4.1.2 resolvió los avisos de OSV: Tomcat 11.0.27, Jackson 2.21.7/3.1.7 y Security 7.1.2.
 - Credenciales demo `recepcion.e2e` / `Vollmed2026!` documentadas como ejemplo local.
 
 ## Observaciones / limitaciones
-- JWT sin roles: todos ROLE_USER. El layout/menú también se ve en `/login`.
+- El JWT sigue en `localStorage` por compatibilidad con el frontend actual; la CSP reduce el
+  impacto de XSS, pero migrar a cookie HttpOnly queda pendiente.
+- `npm run build` falla por tipos React ausentes (`@types/react`); `npx vite build` sí compila.
+- El layout/menú también se ve en `/login`.
 - `favicon.ico` da 404 (cosmético). `findActivoById` con id inexistente devuelve 500.
 - En `medico` solo email y DNI son unique; teléfonos repetidos permitidos.
 

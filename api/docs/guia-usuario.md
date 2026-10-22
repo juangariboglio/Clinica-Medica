@@ -18,7 +18,9 @@ registrar y editar pacientes, agendar consultas y consultar la agenda.
    El servidor de desarrollo redirige automáticamente las llamadas `/api/*` al backend.
 
 3. **Credenciales**: necesita un usuario activo en el sistema; solicítelas al
-   administrador si no las tiene. Para entornos de prueba existe el usuario
+   administrador si no las tiene. El usuario demo es administrador; las cuentas nuevas
+   de recepción pueden crear y editar, pero no eliminar pacientes ni médicos.
+   Para entornos de prueba existe el usuario
    `recepcion.e2e` (clave `Vollmed2026!`).
 
 ## Iniciar sesión
@@ -29,8 +31,9 @@ registrar y editar pacientes, agendar consultas y consultar la agenda.
    muestra un saludo con su usuario y el botón **Cerrar sesión**.
 
 Si el usuario o la contraseña no son correctos, el sistema lo indica con un
-mensaje junto al formulario. Tras 30 minutos de inactividad la sesión se cierra
-automáticamente y volverá a la pantalla de inicio de sesión.
+mensaje junto al formulario. Tras varios intentos fallidos desde la misma conexión,
+el acceso se bloquea temporalmente durante 15 minutos. Tras 30 minutos de inactividad
+la sesión se cierra automáticamente y volverá a la pantalla de inicio de sesión.
 
 ## Navegación
 

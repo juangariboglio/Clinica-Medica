@@ -17,20 +17,27 @@ No hay H2 ni base de datos embebida; las pruebas usan MySQL real en localhost:33
 El esquema lo gestiona Flyway, así que ambas bases deben existir antes de ejecutar los tests.
 
 ## Rarezas de configuración
-- `src/main/resources/application.properties` tiene credenciales de MySQL en texto plano y activa
-  `spring.flyway.out-of-order=true`. Las líneas de comentario usan `//` (inusual en .properties).
-- El secreto JWT viene de la variable de entorno `JWT_SECRET` (`api.security.secret=${JWT_SECRET:12345}`).
-- `application-production.properties` espera las variables `DATASOURCE_URL/USERNAME/PASSWORD`.
-- Las migraciones están en `src/main/resources/db/migration`, versiones V1–V8 sin V5 (el hueco es
+- `src/main/resources/application.properties` toma la conexión de MySQL de variables de entorno
+  (`VOLLMED_DB_*`) y activa `spring.flyway.out-of-order=true`. Las líneas de comentario usan `//`
+  (inusual en .properties).
+- El secreto JWT viene de `VOLLMED_JWT_SECRET`; en desarrollo hay un valor por defecto, pero
+  `application-production.properties` lo exige sin default y la aplicación falla al arrancar si falta.
+- El login limita los intentos fallidos por IP (`seguridad.login.*`).
+- `application-production.properties` espera `DATASOURCE_URL/USERNAME/PASSWORD`,
+  `VOLLMED_JWT_SECRET` y `WEBSOCKET_ALLOWED_ORIGINS`; exige TLS para MySQL y desactiva Swagger/OpenAPI.
+- El WebSocket no recibe el JWT en la URL: el frontend pide un ticket efímero a `/ws/ticket`.
+- Las migraciones están en `src/main/resources/db/migration`, versiones V1–V9 sin V5 (el hueco es
   histórico, intencional): no renumerar; agregar la siguiente versión al final.
 
 ## Arquitectura
 - Punto de entrada: `med.voll.api.ApiApplication`. El código se organiza por dominio bajo
   `src/main/java/med/voll/api/`: `medico`, `paciente`, `consulta`, `usuario`, más `dto` e
-  `infra` compartidos (security, errores, springdoc).
+  `infra` compartidos (security, errores, springdoc, auditoria, websocket).
 - Los controllers llaman directamente a los repositorios JPA (sin capa de servicio: es intencional
-  en esta fase del curso).
+  en esta fase del curso). `AuditoriaService` es la excepción transversal para dejar traza.
 - Flujo de reservas: `consulta/ReservaDeConsultas` + una clase por regla en `consulta/validaciones/`.
+- Roles: `ROLE_ADMIN` puede borrar médicos/pacientes; `ROLE_RECEPCION` opera el día a día. La regla
+  se aplica con `@PreAuthorize` en los controllers.
 
 ## Convenciones (síguelas)
 - **Todos los nombres están en español**: clases, métodos, DTOs, tests y comentarios.
@@ -39,8 +46,9 @@ El esquema lo gestiona Flyway, así que ambas bases deben existir antes de ejecu
 - Los borrados son lógicos: la entidad mantiene el flag `activo`, el controller llama a `desactivar*()` y devuelve 204.
 - Las reglas de validación van en los campos de los DTOs con anotaciones Jakarta; los errores los maneja
   `infra/errores/TratadorDeErrores`.
-- Los tests usan `@DisplayName` en español y `@WithMockUser` (solo `POST /login` y las rutas de Swagger
-  son públicas; todo lo demás exige autenticación).
+- Los tests usan `@DisplayName` en español y `@WithMockUser(roles = "RECEPCION")` o
+  `.with(user(...).roles(...))` (solo `POST /login`, `/ws` y las rutas de Swagger son públicas;
+  todo lo demás exige autenticación).
 - Textos de la interfaz en español.
 - Código simple, nombres descriptivos y comentarios solo donde aporten.
 - Diseño limpio y responsive; cualquier pantalla nueva debe verse bien en el móvil. 

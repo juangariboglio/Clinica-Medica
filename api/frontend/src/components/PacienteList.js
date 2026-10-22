@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as pacienteService from '../services/pacienteService.js';
+import { useAuth } from '../hooks/useAuth.js';
 
 // LISTA DE PACIENTES CON BUSQUEDA POR NOMBRE, EDICION Y BORRADO LOGICO.
 // EL LISTADO SOLO SE REFRESCA AL RECARGAR LA PAGINA (RF-8: LOS CAMBIOS DE
@@ -12,6 +13,9 @@ export const PacienteList = () => {
   const [mensajeAccion, setMensajeAccion] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+  const { usuario } = useAuth();
+  // EL BORRADO ES SOLO PARA ADMIN; EL BACKEND TAMBIEN LO VALIDA CON @PreAuthorize
+  const puedeEliminar = usuario && usuario.rol === 'ROLE_ADMIN';
 
   useEffect(() => {
     const fetchPacientes = async () => {
@@ -96,11 +100,13 @@ export const PacienteList = () => {
                           onClick: () => navigate(`/pacientes/${paciente.id}/editar`),
                           'aria-label': `Editar paciente ${paciente.nombre}`
                         }, 'Editar'),
-                        React.createElement('button', {
-                          className: 'button button-pequeno button-peligro',
-                          onClick: () => handleEliminar(paciente),
-                          'aria-label': `Eliminar paciente ${paciente.nombre}`
-                        }, 'Eliminar')
+                        puedeEliminar
+                          ? React.createElement('button', {
+                              className: 'button button-pequeno button-peligro',
+                              onClick: () => handleEliminar(paciente),
+                              'aria-label': `Eliminar paciente ${paciente.nombre}`
+                            }, 'Eliminar')
+                          : null
                       )
                     )
                   )

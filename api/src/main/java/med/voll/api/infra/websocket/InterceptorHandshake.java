@@ -1,6 +1,5 @@
 package med.voll.api.infra.websocket;
 
-import med.voll.api.infra.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
@@ -13,19 +12,18 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-//VALIDA EL TOKEN JWT DURANTE EL HANDSHAKE DEL WEBSOCKET. LOS NAVEGADORES NO PUEDEN
-//ENVIAR EL ENCABEZADO Authorization EN UNA CONEXION WEBSOCKET, POR ESO EL TOKEN VIAJA
-//EN EL QUERY PARAM ?token=... Y SE VALIDA AQUI CON EL MISMO TokenService DEL REST.
+//VALIDA UN TICKET EFIMERO DURANTE EL HANDSHAKE DEL WEBSOCKET. EL JWT NUNCA VIAJA
+//EN LA URL: EL FRONTEND LO CAMBIA POR UN TICKET DE UN SOLO USO EN /ws/ticket.
 @Component
 public class InterceptorHandshake implements HandshakeInterceptor {
     @Autowired
-    private TokenService tokenService;
+    private ServicioTicketWebSocket servicioTicketWebSocket;
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                     WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        var token = obtenerTokenDelQuery(request.getURI().getRawQuery());
-        var nombreDeUsuario = token != null ? tokenService.getSubject(token) : null;
+        var ticket = obtenerParametroDelQuery(request.getURI().getRawQuery(), "ticket");
+        var nombreDeUsuario = servicioTicketWebSocket.consumir(ticket);
         if (nombreDeUsuario == null) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;
@@ -40,14 +38,15 @@ public class InterceptorHandshake implements HandshakeInterceptor {
         // Nada que hacer despues del handshake
     }
 
-    //EXTRAE EL VALOR DEL PARAMETRO token DE LA CADENA DE QUERY (SIN DEPENDENCIAS EXTERNAS)
-    private String obtenerTokenDelQuery(String query) {
+    //EXTRAE EL VALOR DE UN PARAMETRO DE LA CADENA DE QUERY (SIN DEPENDENCIAS EXTERNAS)
+    private String obtenerParametroDelQuery(String query, String nombre) {
         if (query == null) {
             return null;
         }
+        var prefijo = nombre + "=";
         for (String parametro : query.split("&")) {
-            if (parametro.startsWith("token=")) {
-                return URLDecoder.decode(parametro.substring("token=".length()), StandardCharsets.UTF_8);
+            if (parametro.startsWith(prefijo)) {
+                return URLDecoder.decode(parametro.substring(prefijo.length()), StandardCharsets.UTF_8);
             }
         }
         return null;

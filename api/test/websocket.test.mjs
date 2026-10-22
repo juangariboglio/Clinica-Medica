@@ -61,6 +61,12 @@ beforeEach(async () => {
   WebSocketFake.instancias = [];
   globalThis.WebSocket = WebSocketFake;
   localStorageMock.clear();
+  // EL CLIENTE PIDE UN TICKET EFIMERO ANTES DE ABRIR EL WEBSOCKET
+  globalThis.fetch = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({ ticket: 'ticket-de-prueba' })
+  });
   // OJO: EL MODULO MANTIENE ESTADO (socket, SUSCRIPTORES) PORQUE EL IMPORT SE
   // CACHEA; CADA TEST LO LIMPIA CON cerrarWebSocket EN EL afterEach
   const modulo = await import('../frontend/src/utils/websocket.js');
@@ -79,34 +85,31 @@ describe('RF-7/RNF-3: cliente WebSocket', () => {
     assert.strictEqual(typeof websocket.cerrarWebSocket, 'function');
   });
 
-  it('sin token no abre ninguna conexión', () => {
-    const socket = websocket.conectarWebSocket();
+  it('sin token no abre ninguna conexión', async () => {
+    const socket = await websocket.conectarWebSocket();
     assert.strictEqual(socket, null);
     assert.strictEqual(WebSocketFake.instancias.length, 0);
   });
 
-  it('con token abre la conexión a /ws con el token en el query param', () => {
+  it('con token pide un ticket y abre /ws con el ticket en el query param', async () => {
     localStorage.setItem('token', 'jwt-de-prueba');
-    const socket = websocket.conectarWebSocket();
+    const socket = await websocket.conectarWebSocket();
     assert.ok(socket instanceof WebSocketFake);
-    assert.strictEqual(
-      socket.url,
-      'ws://localhost:5173/ws?token=jwt-de-prueba'
-    );
+    assert.strictEqual(socket.url, 'ws://localhost:5173/ws?ticket=ticket-de-prueba');
   });
 
-  it('no abre una segunda conexión si ya hay una en curso', () => {
+  it('no abre una segunda conexión si ya hay una en curso', async () => {
     localStorage.setItem('token', 'jwt-de-prueba');
-    websocket.conectarWebSocket();
-    websocket.conectarWebSocket();
+    await websocket.conectarWebSocket();
+    await websocket.conectarWebSocket();
     assert.strictEqual(WebSocketFake.instancias.length, 1);
   });
 
-  it('notifica a los suscriptores cuando llega un evento de consulta creada', () => {
+  it('notifica a los suscriptores cuando llega un evento de consulta creada', async () => {
     localStorage.setItem('token', 'jwt-de-prueba');
     const eventos = [];
     const cancelar = websocket.suscribirActualizaciones((evento) => eventos.push(evento));
-    const socket = websocket.conectarWebSocket();
+    const socket = await websocket.conectarWebSocket();
     socket.recibirMensaje('{"tipo":"CONSULTA_CREADA"}');
     assert.deepStrictEqual(eventos, [{ tipo: 'CONSULTA_CREADA' }]);
     // AL CANCELAR LA SUSCRIPCION NO SE RECIBEN MAS EVENTOS
@@ -115,14 +118,14 @@ describe('RF-7/RNF-3: cliente WebSocket', () => {
     assert.strictEqual(eventos.length, 1);
   });
 
-  it('un mensaje sin JSON también refresca (evento null) y un suscriptor que falla no rompe el resto', () => {
+  it('un mensaje sin JSON también refresca (evento null) y un suscriptor que falla no rompe el resto', async () => {
     localStorage.setItem('token', 'jwt-de-prueba');
     const eventos = [];
     websocket.suscribirActualizaciones(() => {
       throw new Error('suscriptor roto');
     });
     websocket.suscribirActualizaciones((evento) => eventos.push(evento));
-    const socket = websocket.conectarWebSocket();
+    const socket = await websocket.conectarWebSocket();
     socket.recibirMensaje('no-es-json');
     assert.deepStrictEqual(eventos, [null]);
   });
@@ -131,7 +134,7 @@ describe('RF-7/RNF-3: cliente WebSocket', () => {
     t.mock.timers.enable({ apis: ['setTimeout'] });
     try {
       localStorage.setItem('token', 'jwt-de-prueba');
-      const primerSocket = websocket.conectarWebSocket();
+      const primerSocket = await websocket.conectarWebSocket();
       primerSocket.abrir();
       assert.strictEqual(websocket.estaConectado(), true);
       // SE SIMULA EL CIERRE POR PARTE DEL SERVIDOR
@@ -151,7 +154,7 @@ describe('RF-7/RNF-3: cliente WebSocket', () => {
     t.mock.timers.enable({ apis: ['setTimeout'] });
     try {
       localStorage.setItem('token', 'jwt-de-prueba');
-      const socket = websocket.conectarWebSocket();
+      const socket = await websocket.conectarWebSocket();
       socket.cerrar();
       websocket.cerrarWebSocket();
       t.mock.timers.tick(6000);

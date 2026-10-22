@@ -3,6 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSP: REDUCE EL IMPACTO DE UN XSS. EL TOKEN SIGUE EN localStorage POR COMPATIBILIDAD,
+         PERO AL NO PERMITIR SCRIPTS DE TERCEROS SE LIMITA LA SUPERFICIE DE ROBO. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
     <meta name="description" content="Sistema de gestión de la clínica Vollmed" />
     <title>Vollmed - Clínica Médica</title>
   </head>

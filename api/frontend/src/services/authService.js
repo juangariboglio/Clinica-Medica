@@ -16,8 +16,13 @@ export const authService = {
       body: JSON.stringify(credenciales)
     });
 
+    if (response.status === 429) {
+      const datos = await response.json().catch(() => null);
+      throw new Error((datos && datos.mensaje) || 'Demasiados intentos. Intente de nuevo más tarde.');
+    }
+
     if (!response.ok) {
-      // El backend responde 403 con cuerpo vacío cuando las credenciales no son válidas
+      // El backend responde 401 cuando las credenciales no son válidas
       throw new Error('Usuario o contraseña incorrectos');
     }
 
@@ -77,7 +82,7 @@ export const authService = {
       if (!payload || typeof payload.sub !== 'string') {
         return null;
       }
-      return { login: payload.sub, id: payload.id };
+      return { login: payload.sub, id: payload.id, rol: payload.rol || 'ROLE_RECEPCION' };
     } catch {
       return null;
     }

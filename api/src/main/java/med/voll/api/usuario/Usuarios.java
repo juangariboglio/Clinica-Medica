@@ -26,11 +26,15 @@ public class Usuarios implements UserDetails {
     private Long id;
     private String login;
     private String clave;
+    //ROLES: ROLE_ADMIN (borrados) Y ROLE_RECEPCION (operacion diaria)
+    @Column(nullable = false)
+    private String rol;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        //LO QUE HACEMOS CON LA LINEA DE ABAJO ES QUE DESIGNAMOS A ESTA CLASE EL ROL DE USUARIO
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        //SI LA COLUMNA VIENE VACIA SE USA EL ROL MINIMO PARA NO ROMPER DATOS ANTIGUOS
+        var rolEfectivo = (rol == null || rol.isBlank()) ? "ROLE_RECEPCION" : rol;
+        return List.of(new SimpleGrantedAuthority(rolEfectivo));
     }
 
     @Override
