@@ -1,0 +1,738 @@
+/* ============================================================
+   VOLLMED - IDENTIDAD VISUAL "CLINICA VERDE"
+   Solo CSS: el HTML/JSX no cambia. La paleta azul se sustituye
+   por verdes clinicos + papel verdoso, con titulos en serif.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap');
+
+:root {
+  /* Paleta clinica */
+  --verde-bosque: #0c3b2c;
+  --verde-pino: #13503d;
+  --verde-principal: #146b52;
+  --verde-tinte: #e4efe8;
+  --verde-menta: #cfe6da;
+  --papel: #f4f7f4;
+  --tinta: #16221d;
+  --gris-verde: #5b6f66;
+  --borde: #d8e2db;
+
+  /* Tokens heredados: se conservan los nombres para no tocar componentes */
+  --primary-color: var(--verde-principal);
+  --secondary-color: var(--gris-verde);
+  --background-color: var(--papel);
+  --text-color: var(--tinta);
+  --border-radius: 0.5rem;
+  --box-shadow: 0 1px 2px rgb(12 59 44 / 0.06), 0 8px 24px -12px rgb(12 59 44 / 0.18);
+
+  /* Tipografia */
+  --fuente-texto: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --fuente-titulos: 'Source Serif 4', Georgia, Cambria, 'Times New Roman', serif;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fuente-texto);
+  background-color: var(--background-color);
+  /* Textura tenue de hoja clinica: cuadricula de 32 px */
+  background-image:
+    linear-gradient(to right, rgb(12 59 44 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(12 59 44 / 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: var(--text-color);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+legend {
+  font-family: var(--fuente-titulos);
+  color: var(--verde-bosque);
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 1.65rem;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+h3 {
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
+}
+
+p {
+  margin: 0 0 0.75rem;
+}
+
+a {
+  color: var(--verde-principal);
+  text-underline-offset: 2px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* ============ CABECERA ============ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: var(--verde-bosque);
+  background-image:
+    /* Unico gesto grafico: trazo de ECG muy tenue */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='56' viewBox='0 0 240 56'%3E%3Cpath d='M0 34h62l11-16 13 30 11-14h36l9-18 10 34 9-20h69' fill='none' stroke='%23ffffff' stroke-opacity='0.14' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"),
+    linear-gradient(100deg, var(--verde-bosque) 0%, var(--verde-pino) 62%, #17624a 100%);
+  background-repeat: no-repeat, no-repeat;
+  /* El trazo queda en el centro-izquierda, lejos de las acciones */
+  background-position: 55% center, center;
+  background-size: 240px 56px, cover;
+  color: white;
+  padding: 0.85rem clamp(1rem, 2.5vw, 2.5rem);
+  border-bottom: 1px solid rgb(255 255 255 / 0.14);
+  box-shadow: 0 2px 10px rgb(12 59 44 / 0.18);
+}
+
+.header .header-contenido {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  /* Sin tope fijo: en pantalla completa ocupa todo el ancho disponible */
+  max-width: none;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #ffffff;
+}
+
+.header-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.user-role {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #e9f4ee;
+}
+
+/* Punto de sesion activa: informa sin decorar */
+.user-role::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 0.45rem;
+  border-radius: 50%;
+  background-color: #7fd3a8;
+  box-shadow: 0 0 0 3px rgb(127 211 168 / 0.18);
+  vertical-align: middle;
+}
+
+/* ============ BOTONES ============ */
+.button {
+  background-color: var(--verde-principal);
+  color: #ffffff;
+  border: 1px solid transparent;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 140ms ease, box-shadow 140ms ease, transform 80ms ease;
+}
+
+.button:hover {
+  background-color: #0f5a45;
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button-secundario {
+  background-color: transparent;
+  border: 1px solid rgb(255 255 255 / 0.6);
+  color: #ffffff;
+}
+
+.button-secundario:hover {
+  background-color: rgb(255 255 255 / 0.14);
+  border-color: rgb(255 255 255 / 0.9);
+}
+
+.button-peligro {
+  background-color: #b4232a;
+}
+
+.button-peligro:hover {
+  background-color: #8f1c22;
+}
+
+.button-pequeno {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+/* ============ CAMPOS ============ */
+.input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: var(--tinta);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.35;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.input:hover {
+  border-color: #b9cfc2;
+}
+
+.input:disabled {
+  background-color: #eef2ef;
+  color: var(--gris-verde);
+  cursor: not-allowed;
+}
+
+.input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgb(20 107 82 / 0.16);
+  outline: none;
+}
+
+select.input {
+  cursor: pointer;
+}
+
+/* RF-11: foco visible y accesible en todos los elementos interactivos */
+:focus-visible {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.button:focus-visible,
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role='radiogroup']:focus-within {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Sobre el verde oscuro de la cabecera el foco debe ser claro */
+.header :focus-visible {
+  outline-color: #ffffff;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: var(--verde-principal);
+}
+
+/* ============ LAYOUT GENERAL DE LA APLICACION ============ */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-cuerpo {
+  flex: 1;
+  display: flex;
+  /* Ocupa todo el ancho de la ventana (sin max-width fijo) */
+  max-width: none;
+  width: 100%;
+  margin: 0 auto;
+  gap: 1.75rem;
+  padding: 1.75rem clamp(1rem, 2.5vw, 2.5rem) 2.5rem;
+}
+
+.sidebar {
+  width: 215px;
+  flex-shrink: 0;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.55rem 0.8rem;
+  border-left: 3px solid transparent;
+  border-radius: 4px;
+  color: #33463d;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.nav-link:hover {
+  background-color: #e9f1ec;
+  color: var(--verde-bosque);
+}
+
+.nav-link-activo {
+  background-color: var(--verde-tinte);
+  border-left-color: var(--verde-principal);
+  color: var(--verde-bosque);
+  font-weight: 600;
+}
+
+.nav-link-activo:hover {
+  background-color: var(--verde-tinte);
+}
+
+.app-contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ============ FORMULARIOS ============ */
+/* Medida de lectura comoda en escritorio; en movil ocupan todo el ancho */
+.paciente-form,
+.medico-form,
+.consulta-form {
+  max-width: 760px;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #2a3d34;
+}
+
+.label-bloque {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #2a3d34;
+}
+
+.form-fieldset {
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem 0.25rem;
+  background-color: #fbfdfb;
+}
+
+.form-fieldset legend {
+  font-family: var(--fuente-titulos);
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0 0.45rem;
+  color: var(--verde-bosque);
+}
+
+.radiogroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.radio-opcion {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.radio-opcion:hover {
+  background-color: #eff5f1;
+}
+
+.error {
+  color: #b4232a;
+  font-size: 0.85rem;
+  display: block;
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+.success {
+  color: #1e7a4c;
+  font-weight: 600;
+}
+
+/* TEXTO DE AYUDA BAJO UN CAMPO (P. EJ. AVISO DE QUE EL DNI NO SE EDITA) */
+.ayuda {
+  color: var(--gris-verde);
+  font-size: 0.82rem;
+  display: block;
+  margin-top: 0.3rem;
+}
+
+.message {
+  padding: 0.7rem 0.85rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  border-left: 3px solid transparent;
+}
+
+.message.error {
+  background-color: #fbeaeb;
+  border-left-color: #b4232a;
+  color: #7d181d;
+}
+
+.message.success {
+  background-color: #e7f5ec;
+  border-left-color: #1e7a4c;
+  color: #145c38;
+}
+
+/* ============ LOGIN ============ */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 3rem 1rem;
+  background:
+    radial-gradient(1100px 420px at 50% -160px, rgb(20 107 82 / 0.14), transparent 70%);
+}
+
+.login-card {
+  background-color: #ffffff;
+  border: 1px solid var(--borde);
+  border-top: 4px solid var(--verde-principal);
+  border-radius: 8px;
+  box-shadow: var(--box-shadow);
+  padding: 2.25rem 2rem 1.75rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-card h2 {
+  margin-top: 0;
+  margin-bottom: 0.35rem;
+  font-size: 1.7rem;
+}
+
+.login-subtitulo {
+  color: var(--secondary-color);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+/* ============ TABLAS (CON SCROLL HORIZONTAL EN MOVIL) ============ */
+.tabla-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgb(12 59 44 / 0.05);
+  scrollbar-width: thin;
+  scrollbar-color: #b9cfc2 transparent;
+}
+
+.tabla-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tabla-scroll::-webkit-scrollbar-thumb {
+  background-color: #b9cfc2;
+  border-radius: 4px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+th,
+td {
+  padding: 0.7rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid #e8efe9;
+  vertical-align: top;
+}
+
+th {
+  background-color: var(--verde-tinte);
+  color: var(--verde-bosque);
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-bottom: 1px solid var(--verde-menta);
+  white-space: nowrap;
+}
+
+tbody tr {
+  transition: background-color 120ms ease;
+}
+
+tbody tr:hover {
+  background-color: #f6faf7;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+td:first-child {
+  font-variant-numeric: tabular-nums;
+  color: #2a3d34;
+}
+
+/* Separacion entre acciones de una misma fila (Editar / Eliminar) */
+td .button + .button {
+  margin-left: 0.4rem;
+}
+
+.tabla-agenda td:first-child {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.agenda-filtros {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 1rem 1rem 0.25rem;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background-color: #fbfdfb;
+}
+
+.agenda-filtros .form-group {
+  flex: 1;
+  min-width: 200px;
+  margin-bottom: 0.75rem;
+}
+
+.agenda-estado {
+  color: var(--secondary-color);
+  font-size: 0.875rem;
+}
+
+.search-box {
+  margin-bottom: 1rem;
+  max-width: 340px;
+}
+
+/* Aire entre la tabla y el boton de alta */
+.medico-list > .form-group:last-child,
+.paciente-list > .form-group:last-child {
+  margin-top: 1.1rem;
+}
+
+/* En pantallas estrechas el trazo de ECG se retira: manda la legibilidad */
+@media (max-width: 1024px) {
+  .header {
+    background-image: linear-gradient(100deg, var(--verde-bosque) 0%, var(--verde-pino) 62%, #17624a 100%);
+    background-position: center;
+    background-size: cover;
+  }
+}
+
+/* SEPARA EL FILTRO DEL BUSCADOR CUANDO VAN APILADOS (LISTA DE MEDICOS) */
+.search-box > .input ~ .input {
+  margin-top: 0.5rem;
+}
+
+.label-visualmente-oculta {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ============ INICIO ============ */
+.home {
+  max-width: 680px;
+}
+
+.home h2 {
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.home-acciones {
+  line-height: 1.7;
+  list-style: none;
+  padding-left: 0;
+  margin: 1.25rem 0 0;
+}
+
+.home-acciones li {
+  position: relative;
+  padding-left: 1.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.home-acciones li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background-color: var(--verde-principal);
+}
+
+/* ============ PIE ============ */
+.footer {
+  border-top: 1px solid var(--borde);
+  background-color: rgb(255 255 255 / 0.7);
+  color: var(--gris-verde);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+.footer p {
+  margin: 0;
+}
+
+/* ============ RESPONSIVE (RF-10/RNF-2) ============ */
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 0.75rem;
+    background-position: right -40px center, center;
+    background-size: 200px 48px, cover;
+  }
+
+  .header h1 {
+    font-size: 1.35rem;
+  }
+
+  .header-acciones {
+    gap: 0.6rem;
+  }
+
+  .user-role {
+    font-size: 0.85rem;
+  }
+
+  .button {
+    padding: 0.5rem 0.8rem;
+  }
+
+  .app-cuerpo {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0.75rem 2rem;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .sidebar nav ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .nav-link {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 4px;
+  }
+
+  .nav-link-activo {
+    border-left: none;
+    border-bottom-color: var(--verde-principal);
+  }
+
+  .header .header-contenido {
+    padding: 0;
+  }
+
+  .agenda-filtros .form-group {
+    min-width: 100%;
+  }
+
+  .agenda-filtros {
+    padding: 0.85rem 0.85rem 0.1rem;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+
+  .tabla-scroll table {
+    min-width: 560px;
+  }
+
+  .login-container {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .login-card {
+    padding: 1.5rem 1.25rem 1.25rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+}
+
+/* ============ MOVIMIENTO REDUCIDO ============ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
