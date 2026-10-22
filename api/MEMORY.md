@@ -1,20 +1,20 @@
 # MEMORY.md
 
-Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no
-aporte.
+Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no aporte.
 
-## Estado actual (2026-10-21)
+## Estado actual (2026-10-22)
+- Repo: `github.com/juangariboglio/Clinica-Medica`, rama `main`. Subidos 3 commits:
+  backend Spring Boot 4.1.1, frontend React y docs/tests. README raíz con captura real en
+  `api/docs/capturas/interfaz.png`.
 - Backend: Spring Boot 4.1.1 + Security 7 + Hibernate 7 + Java 17 + MySQL (Flyway V1–V8,
   ddl-auto=validate). Arranca con `mvnw.cmd spring-boot:run`.
-- Frontend: React + Vite 8 en `frontend/` (`npm run dev`, puerto 5173, proxy /api y /ws).
-  App real con router (`App.js`), Layout, PrivateRoute y AutoLogout: verificada en vivo.
-- Tests: **140/140 verde** con
-  `node --test "test/*.test.mjs" "frontend/test/componentes/*.test.mjs"` (globs entre
-  comillas; pasar directorios NO funciona). Tests RTL en `frontend/test/componentes/`.
-- Skills: `frontend-design` (anthropics/skills) instalada para el proyecto en
-  `.agents/skills/frontend-design` (guía de dirección visual; no es código de la app).
-- Spec 001-front-end: **T1–T34 completas**. Veredicto: cumplida con las limitaciones
-  anotadas (JWT sin roles, selección de hora por rango libre) y 3 dudas abiertas de spec.
+- Configuración: `application.properties` exige `VOLLMED_DB_PASSWORD` (sin valor por
+  defecto); JWT con `VOLLMED_JWT_SECRET`. Bases: `vollmed_api` y `vollmed_api_test`.
+- Frontend: React 19 + Vite 8 en `frontend/` (`npm run dev`, puerto 5173, proxy /api y /ws).
+- Tests: **140/140 frontend y 4/4 backend**. Comando frontend:
+  `node --test "test/*.test.mjs" "frontend/test/componentes/*.test.mjs"` (globs entre comillas).
+- Spec 001-front-end: T1–T34 completas; limitaciones anotadas (JWT sin roles, selección de
+  hora por rango libre). 3 dudas de spec siguen abiertas.
 
 ## Correcciones importantes
 - Security 7: SecurityFilter usa createEmptyContext+setContext+saveContext con
@@ -23,58 +23,41 @@ aporte.
   Sin esto TODA ruta protegida daba 401 con token válido.
 - `ValidacionMedicoActivo` usaba `datos.idPaciente()` → corregido a `idMedico()` (daba 500).
 - `consultaService.getAll(fecha)`: la agenda "Todos los médicos" ignoraba la fecha (RF-7);
-  ahora llama `GET /consultas?fecha=...` (el backend ya lo soporta).
+  ahora llama `GET /consultas?fecha=...`.
 - `dateUtils.aCadenaLocal()`: sustituye `toISOString()` para fechas por defecto (en UTC de
   noche devolvía el día siguiente).
 
 ## Decisiones (y por qué)
 - Agenda: filtro por médico y/o día; el WS difunde `CONSULTA_CREADA/CANCELADA` y el
-  componente refetchea. Latencia medida en vivo: **40 ms y 35 ms** (RNF-3 ≤2 s). Polling
-  30 s solo como respaldo si el WS no está conectado.
-- Disponibilidad en el formulario: se muestran **rangos libres** (p. ej. 07:00–19:00) y la
-  cita se crea al inicio del rango elegido. La cuadrícula de 30 min existe como componente
-  (DisponibilidadGrid) y está testeada, pero no la usa el formulario. Decisión heredada y
-  cubierta por tests: cambiarla exige rehacer tests T31.
-- DNI `\d{2}\.\d{3}\.\d{3}`; dirección: calle, número y ciudad obligatorios;
-  **complemento y distrito opcionales** (sin @NotBlank en DTODireccion y sin required en el
-  form; la BD admite "" en distrito y NULL en complemento).
-- Edición de paciente: el **email sí se edita** (DTOActualizarPaciente y el PUT lo incluyen);
-  el **DNI no**: no está en el DTO, va deshabilitado y el alta avisa "El DNI no se podrá editar
-  después de guardar." (clase `.ayuda` + aria-describedby).
-- Pantalla de médicos (`/medicos`, `/medicos/nuevo`, `/medicos/:id/editar`): lista con búsqueda
-  por nombre y filtro por especialidad (sin borrado desde la UI). En edición se pueden cambiar
-  nombre, email, teléfono, especialidad y dirección; el DNI va bloqueado. Requirió ampliar
-  `DTOActualizarMedico` y `Medico.actualizarDatos` (opción B).
-- Usuario semilla e2e `recepcion.e2e` (clave fuera del repo) creado por JDBC+BCrypt.
-- Rediseño visual **solo en `globals.css`** (HTML/JSX intacto): paleta verde clínica
-  (bosque #0C3B2C, primario #146B52) en lugar del azul; Source Serif 4 en títulos y
-  Source Sans 3 en la UI (Google Fonts con fallback); trazo de ECG tenue en la cabecera
-  (oculto < 1024 px); menú móvil en dos filas. `style.css` es residuo del scaffold, sin uso.
-- Layout **a ancho completo**: cabecera y `.app-cuerpo` ya no tienen `max-width: 1240px`;
-  ocupan el 100% con padding fluido (`clamp`). Los formularios mantienen su tope de 760 px
-  para no estirar los campos. Cubierto por `frontend/test/componentes/Maquetacion.test.mjs`.
+  componente refetchea (latencia 35–40 ms). Polling 30 s solo si el WS no conecta.
+- Disponibilidad: se muestran **rangos libres** y la cita se crea al inicio del rango.
+  `DisponibilidadGrid` (30 min) existe y está testeada, pero no la usa el formulario.
+- DNI `\d{2}\.\d{3}\.\d{3}`; dirección: calle, número y ciudad obligatorios; complemento y
+  distrito opcionales. Email de paciente editable; DNI bloqueado.
+- Médicos (`/medicos`): búsqueda, filtro por especialidad, alta y edición; sin borrado UI.
+  Se amplió `DTOActualizarMedico` y `Medico.actualizarDatos` (email, teléfono, especialidad).
+- Rediseño **solo en `globals.css`**: paleta verde clínica, Source Serif 4 + Source Sans 3,
+  trazo de ECG en cabecera y menú móvil en dos filas. Layout a ancho completo; formularios
+  limitados a 760 px. Cubierto por `frontend/test/componentes/Maquetacion.test.mjs`.
+- Push GitHub: PAT fine-grained necesita **Contents: Read and write** (Metadata read-only es
+  normal). `.opencode/` y `.agents/` están ignorados; el token nunca se versiona.
+- Credenciales demo `recepcion.e2e` / `Vollmed2026!` documentadas como ejemplo local.
 
 ## Observaciones / limitaciones
-- JWT sin roles: todos ROLE_USER → RF-1 "página según rol" no aplicable; hay página común.
-- `favicon.ico` da 404 (cosmético). El layout (menú) se ve también en /login.
-- findActivoById devuelve `boolean` primitivo: id inexistente = 500 (el frontend lo evita
-  con RF-16). No cambiar.
-- El AutoLogout de 30 min se comprobó en vivo (cierre WS + token borrado + /login).
-- En la tabla `medico` solo email y DNI son `unique`: se permiten teléfonos repetidos (el 409
-  de email/DNI sí se muestra inline; el mapeo de teléfono en `detectarErroresUnicidad` sirve a pacientes).
+- JWT sin roles: todos ROLE_USER. El layout/menú también se ve en `/login`.
+- `favicon.ico` da 404 (cosmético). `findActivoById` con id inexistente devuelve 500.
+- En `medico` solo email y DNI son unique; teléfonos repetidos permitidos.
 
 ## Aprendizajes y errores a evitar
-- Los `fill` de DevTools sobre `<select>` no siempre disparan el onChange de React: usar
-  setter nativo + evento change. En inputs de texto `fill` puede AÑADIR en vez de sustituir.
-- `useParams` viene de `react-router-dom`, NO de React: `React.useParams()` rompía
-  /pacientes/:id/editar con pantalla en blanco (corregido).
-- Fechas en tests y en la UI: hora local, nunca `toISOString()` para "hoy".
+- DevTools sobre `<select>`: usar setter nativo + evento change. En inputs de texto, `fill`
+  puede añadir en vez de sustituir.
+- `useParams` viene de `react-router-dom`; `React.useParams()` rompía la edición (corregido).
+- Fechas en tests y UI: hora local, nunca `toISOString()` para "hoy".
 - jsdom/Node 22: importar primero `frontend/test/helpers/dom.mjs`; `navigator` es de solo
-  lectura (defineProperty + try/catch); `cleanup()` en afterEach.
-- Rutas del proyecto con espacios/acentos: usar el parámetro workdir o comillas.
-- Vite + OneDrive a veces sirve CSS cacheado tras varias ediciones seguidas: si el navegador
-  no refleja un cambio ya guardado, reiniciar `npm run dev` (no basta recargar).
-- La emulación de viewport de Chrome DevTools persiste entre llamadas: si la página no llena
-  un monitor grande, comprobar `window.innerWidth` y limpiar la emulación (`emulate` sin viewport).
-- Si Spring no arranca con «Existing directory ... is not owned by BUILTIN\Administradores»,
-  borrar ese directorio de `%TEMP%` y relanzar (lo crea otro contexto de usuario).
+  lectura; `cleanup()` en afterEach.
+- Rutas con espacios/acentos: usar workdir o comillas.
+- Vite + OneDrive sirve CSS cacheado: reiniciar `npm run dev` (no basta recargar).
+- Emulación de viewport de Chrome DevTools persiste: comprobar `window.innerWidth` y limpiar
+  con `emulate` sin viewport.
+- Si Spring falla con «Existing directory ... is not owned by ...», borrar ese directorio de
+  `%TEMP%` y relanzar.
