@@ -105,7 +105,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>3.1.1</version>
+			<version>3.2.0</version>
 		</dependency>
 		<!-- WebSocket para notificar en tiempo real la creación/cancelación de consultas (RF-7/RNF-3) -->
 		<dependency>
